@@ -1,0 +1,32 @@
+{
+  "name": "squid-squad-server",
+  "version": "1.0.0",
+  "description": "handles metadata generation and ipfs file storage",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon --max_old_space_size=12000 ./index.js",
+    "test": "jest --verbose",
+    "test:watch": "jest --verbose --watch --detectOpenHandles"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/The-Squid-Squad/server.git"
+  },
+  "keywords": [
+    "Squid",
+    "Squad",
+    "NFT"
+  ],
+  "author": "Billy Best",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/The-Squid-Squad/server/issues"
+  },
+  "homepage": "https://github.com/The-Squid-Squad/server#readme",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.1",
+    "express": "^4.18.1",
+    "nodemon": "^2.0.16"
+  }
+}
