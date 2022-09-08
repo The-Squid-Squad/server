@@ -4,7 +4,20 @@ class ipfsController {
 
     static async apiGetTokenURI(req, res, next) {
         try {
-            await ipfsDAO.getTokenURI(req)
+            let tokenuri = await ipfsDAO.getTokenURI()
+            res.json({
+                status: 'OK',
+                data: tokenuri
+              });
+        } catch (err) {
+            res.status(500).json({error:err})
+        }
+    }
+    //if mint failed then return the tokenURI aka random_idx into the pool
+    static async apiReturnTokenURI(req, res, next) {
+        try {
+            await ipfsDAO.returnTokenURI(req)
+            console.log('SUCCESS')
         } catch (err) {
             res.status(500).json({error:err})
         }
