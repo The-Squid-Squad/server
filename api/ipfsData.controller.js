@@ -17,7 +17,7 @@ class ipfsController {
     static async apiReturnTokenURI(req, res, next) {
         try {
             await ipfsDAO.returnTokenURI(req)
-            console.log('SUCCESS')
+            res.status(200)
         } catch (err) {
             res.status(500).json({error:err})
         }
