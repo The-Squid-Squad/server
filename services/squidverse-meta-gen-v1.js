@@ -5,13 +5,15 @@ const { NFTStorage, File} = require('nft.storage');
 const NFT_STORAGE_TOKEN = `${process.env.NFT_STORAGE}`;
 const client = new NFTStorage({ token: NFT_STORAGE_TOKEN });
 
-// testing NFTstorage api
-const file = fs.readFileSync('C:/source/squid-squad/server/genesis-launch-images/0.png');
+let currentToken = 0
 
 //const imageFile = new File([ image ], 'nft.png', { type: 'image/png' })
 const generateMetadata = async () => {
+    // testing NFTstorage api
+    const file = fs.readFileSync(`C:/source/squid-squad/server/genesis-launch-images/8.png`);
+    //currentToken++;
 
-    let randomValue1to100 = []
+    let randomValue1to100 = [];
     for(let i = 0; i < 5; i++) {
         randomValue1to100.push( random.integer(0, 100));
     }

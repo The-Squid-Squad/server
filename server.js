@@ -1,5 +1,6 @@
 require('dotenv').config();
 const express = require("express");
+const bodyParser = require("body-parser");
 const cors = require('cors');
 const metaData = require("./api/metaData.route");
 const ipfsData = require("./api/ipfsData.route")
@@ -7,6 +8,8 @@ const ipfsData = require("./api/ipfsData.route")
 
 const app = express()
 
+app.use(bodyParser.json({limit: '10mb'}));
+app.use(bodyParser.urlencoded({limit: '10mb', extended: true}));
 app.use(cors());
 
 app.use("/meta", metaData)

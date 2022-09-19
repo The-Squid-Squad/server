@@ -16,7 +16,7 @@ class ipfsController {
     //if mint failed then return the tokenURI aka random_idx into the pool
     static async apiReturnTokenURI(req, res, next) {
         try {
-            console.log(req)
+            
             await ipfsDAO.returnTokenURI(req.body)
             res.status(200)
         } catch (err) {
