@@ -5,6 +5,6 @@ const router = new Router();
 
 router.route("/getTokenUri").get(ipfsController.apiGetTokenURI) 
 
-router.route("/fallback").post(ipfsController.apiReturnTokenURI) 
+router.route("/fallback").post(ipfsController.apiReturnInternalTokenId) 
 
-module.exports = router;
+module.exports = router; 

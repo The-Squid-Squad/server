@@ -1,50 +1,61 @@
 require('dotenv').config();
 const { MersenneTwister19937, Random } = require('random-js');
 const random = new Random(MersenneTwister19937.autoSeed());
-let nft_indexes = [...Array(10).keys()]; // will be 10000. Using 10 for some test
-const generateMetadata = require('../services/squidverse-meta-gen-v1');
+let internalIdWithUri;
+let tknHolder = new Map();
+require('../services/squidverse-meta-gen-v1')
+    .then( res => {
+        internalIdWithUri = res;
+    })
 
-// *issue* I want to use meta data from the generated peices like clothing articles, etc
-//  and append it to our generated data.
+//  I want to use meta data from the generated peices like clothing articles, color, etc
+//  and append it to our generated data. Im thinking we put all these additional attributes in an array 
+//  called properties which will be distinguied from attributes on the nft and append it to the metadata. 
  
-class ipfsDAO { 
+class ipfsDAO {     
 
-    // returns a tokenURI of generated metadata
-    // to be minted on the client.
+    // First change the management of tokens to use the new array of {id: int, uri: str} were pulling
+    // in from generateMetadata. 
+    // then lets consider moving this logic over to a node worker?
+    // note** make a worker pool ready to handle request. say 4 workers. This will help as we add db calls.
+    // note** our current dev server has a single cpu if we want the benefits we need to upgrade, 
     static async getTokenURI(req, res, next) {
         if(nft_indexes.length >= 1) {
             try {
-                let random_idx = random.integer(0, nft_indexes.length-1);
-                let internal_tknId = nft_indexes.length > 1 ? nft_indexes[random_idx] : nft_indexes[0];
-                console.log("NFT # "+ internal_tknId);
-               
-                nft_indexes[random_idx] = nft_indexes[nft_indexes.length-1];
-                nft_indexes.pop();
-                console.log("reamaining NFTs # "+ nft_indexes);
-                let metadata = await generateMetadata();
-                return {internal_tknId, metadata}
+                let random_idx = random.integer(0, internalIdWithUri.length-1);
+                let nft = internalIdWithUri[random_idx][1].url
+                let id =  internalIdWithUri[random_idx][0]  
+                let internal_tknId = internalIdWithUri.length > 1 ? internalIdWithUri[random_idx][0] : internalIdWithUri[0][0];
+                tknHolder.set(id, nft);
+                internalIdWithUri[random_idx] = internalIdWithUri[internalIdWithUri.length-1];
+                internalIdWithUri.pop();
+                console.log("reamaining " + internalIdWithUri);
+
+                return [internal_tknId, nft]
             } catch (err) {
                 console.log("No more tokens or there was an error:  " + err);
             }       
         }    
     } 
  
-    // returns an index to nft_indexes in the event minting fails on the client.
-    static async returnTokenURI(req, res, next) {
+    // returns the internal_id in the event minting fails on the client.
+    static async returnInternalTokenId(req, res, next) {
         if(nft_indexes.length >= 1) {
             try {
-               console.log("succesfully returned token_dist#" + req.value)
-               let check = nft_indexes.find(element => element == req.value)
-               if(req.value != undefined && check != req.value){
-                nft_indexes.push(req.value)
-                console.log("reamaining NFTs # " + nft_indexes)
+               if(req.value === 'success'){
+                tknHolder.delete(req.id);
+                console.log("Was succesfull, removed " + req.id + " from holding.." )
                } else {
-                console.log('value undefined')
+                let url = tknHolder.get(req.id);
+                internalIdWithUri.push([req.id, {url}]);
+                tknHolder.delete(req.id);
+                console.log("Token " + req.id + " was not minted and return to token pool")
+                //console.log(internalIdWithUri)
                }
                
-               return 1
+               return 
             } catch (err) {
-                console.log("(SERVER) returnTokenURI ERROR: " + err);
+                console.log("(SERVER) returnInternalTokenId ERROR: " + err);
             }      
         }    
     } 

@@ -3,7 +3,7 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require('cors');
 const metaData = require("./api/metaData.route");
-const ipfsData = require("./api/ipfsData.route")
+const ipfsData = require("./api/ipfsData.route");
 
 
 const app = express()

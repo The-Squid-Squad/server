@@ -5,13 +5,12 @@ const { NFTStorage, File} = require('nft.storage');
 const NFT_STORAGE_TOKEN = `${process.env.NFT_STORAGE}`;
 const client = new NFTStorage({ token: NFT_STORAGE_TOKEN });
 
-let currentToken = 0
+let tokenURIS = [];
+let currentToken = 0;
 
 //const imageFile = new File([ image ], 'nft.png', { type: 'image/png' })
 const generateMetadata = async () => {
     // testing NFTstorage api
-    const file = fs.readFileSync(`C:/source/squid-squad/server/genesis-launch-images/8.png`);
-    //currentToken++;
 
     let randomValue1to100 = [];
     for(let i = 0; i < 5; i++) {
@@ -75,11 +74,17 @@ const generateMetadata = async () => {
         ]
     }
 
+    // preconstruct our 888 metadata urls and internal ids and return them  in an array.
+    // we will perform management in the same fashion
+    for(let i = 0; i < 11; i++) {
+        const file = fs.readFileSync(`C:/source/squid-squad/server/genesis-launch-images/${i}.png`);
+        MetaData.image = new File([ file ], MetaData.name, { type: 'image/png' });
+        let tokenURI = await client.store(MetaData);
+        tokenURIS. push([i, tokenURI]);
+        console.log("generated #" + i)
+    }
 
-    MetaData.image = new File([ file ], MetaData.name, { type: 'image/png' });
-    let tokenURI = await client.store(MetaData);
-   
-    return tokenURI;
+    return tokenURIS;
 }
-//generateMetadata()
-module.exports = generateMetadata;
+let internalIdWithUri = generateMetadata();
+module.exports = internalIdWithUri;

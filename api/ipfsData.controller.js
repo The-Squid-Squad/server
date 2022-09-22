@@ -1,6 +1,6 @@
 const ipfsDAO = require("../dao/ipfsDAO");
 
-class ipfsController {
+class ipfsController { 
 
     static async apiGetTokenURI(req, res, next) {
         try {
@@ -14,10 +14,9 @@ class ipfsController {
         }
     }
     //if mint failed then return the tokenURI aka random_idx into the pool
-    static async apiReturnTokenURI(req, res, next) {
-        try {
-            
-            await ipfsDAO.returnTokenURI(req.body)
+    static async apiReturnInternalTokenId(req, res, next) {
+        try {  
+            await ipfsDAO.returnInternalTokenId(req.body)
             res.status(200)
         } catch (err) {
             res.status(500).json({error:err})
