@@ -1,12 +1,12 @@
 require('dotenv').config();
 const { MersenneTwister19937, Random } = require('random-js');
-const random = new Random(MersenneTwister19937.autoSeed());
-let internalIdWithUri;
-let tknHolder = new Map();
-require('../services/squidverse-meta-gen-v1')
-    .then( res => {
-        internalIdWithUri = res;
-    })
+const random = new Random(MersenneTwister19937.autoSeed()); // we use this to select a random nft. Which was already randomly generated.
+let internalIdWithUri = require('../services/squidverse-meta-gen-v1');  // value is an array of our generated nft uri's + an internal_id for management
+let tknHolder = new Map(); //this helps keeps track of tokens wich are in the process of being minted.
+    // .then( res => {
+    //     internalIdWithUri = res;
+    // })
+
 
 //  I want to use meta data from the generated peices like clothing articles, color, etc
 //  and append it to our generated data. Im thinking we put all these additional attributes in an array 
@@ -20,8 +20,9 @@ class ipfsDAO {
     // note** make a worker pool ready to handle request. say 4 workers. This will help as we add db calls.
     // note** our current dev server has a single cpu if we want the benefits we need to upgrade, 
     static async getTokenURI(req, res, next) {
-        if(nft_indexes.length >= 1) {
-            try {
+        //if(internalIdWithUri.length >= 1) {
+            console.log(internalIdWithUri)
+            try {          
                 let random_idx = random.integer(0, internalIdWithUri.length-1);
                 let nft = internalIdWithUri[random_idx][1].url
                 let id =  internalIdWithUri[random_idx][0]  
@@ -35,12 +36,15 @@ class ipfsDAO {
             } catch (err) {
                 console.log("No more tokens or there was an error:  " + err);
             }       
-        }    
+       //}    
     } 
  
-    // returns the internal_id in the event minting fails on the client.
+    // manages the token once it's in the wild.
+    // on success - done
+    // on fail - done
+    // on timeout - 2do
     static async returnInternalTokenId(req, res, next) {
-        if(nft_indexes.length >= 1) {
+        if(internalIdWithUri.length >= 1) {
             try {
                if(req.value === 'success'){
                 tknHolder.delete(req.id);
